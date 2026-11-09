@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小四數學：軸對稱圖形探究實驗室</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans TC & Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Tone.js for gentle sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        :root {
+            --bg-cream: #FFFDF7;
+            --pastel-pink: #FF85A1;
+            --pastel-blue: #4CC9F0;
+            --pastel-mint: #38B000;
+            --pastel-yellow: #FFB703;
+            --pastel-purple: #7209B7;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
+            background-color: #F4F9F9;
+            background-image: radial-gradient(#CBD5E1 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Custom Range Slider for Primary 4 Students */
+        input[type=range].fold-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 22px;
+            background: linear-gradient(90deg, #E2E8F0 0%, #BAE6FD 50%, #FBCFE8 100%);
+            border-radius: 999px;
+            outline: none;
+            border: 3px solid #FFF;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06);
+        }
+
+        input[type=range].fold-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #FF6B8B;
+            border: 4px solid #FFFFFF;
+            box-shadow: 0 4px 10px rgba(255, 107, 139, 0.45);
+            cursor: grab;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        input[type=range].fold-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: #FF477E;
+        }
+
+        input[type=range].fold-slider::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(0.96);
+        }
+
+        /* Bouncy Kid-Friendly Buttons */
+        .kid-btn {
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+        }
+        .kid-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 rgba(0,0,0,0.14);
+        }
+        .kid-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+        }
+
+        .shape-card.active {
+            border-color: #EC4899;
+            background-color: #FDF2F8;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 0 #F472B6;
+        }
+
+        /* Pulse animation for success badge */
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.06); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-badge {
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        canvas {
+            touch-action: none;
+        }
+
+        /* Strict 16:9 Widescreen Stage Container */
+        .stage-16x9 {
+            width: min(98vw, calc(96vh * 16 / 9));
+            height: min(96vh, calc(98vw * 9 / 16));
+            aspect-ratio: 16 / 9;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen overflow-hidden flex items-center justify-center text-slate-800 p-1 sm:p-2 bg-slate-900/5">
+
+    <!-- 16:9 Widescreen Main App Frame -->
+    <div id="appStage" class="stage-16x9 bg-[#F4F9F9] rounded-3xl border-4 border-sky-300 shadow-2xl p-2.5 sm:p-3.5 flex flex-col justify-between gap-2.5 overflow-hidden relative" style="background-image: radial-gradient(#CBD5E1 1.5px, transparent 1.5px); background-size: 22px 22px;">
+
+        <!-- Top Header (Compact for 16:9) -->
+        <header class="w-full bg-white/95 backdrop-blur rounded-2xl border-3 border-sky-200 px-3.5 py-2 shadow-sm flex items-center justify-between gap-2 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-400 to-amber-300 flex items-center justify-center shadow-inner text-white text-xl font-black shrink-0">
+                    🦋
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-800 flex items-center gap-2 leading-tight">
+                        軸對稱圖形探究實驗室
+                        <span class="text-xs bg-amber-100 text-amber-800 border-2 border-amber-300 px-2 py-0.5 rounded-full font-bold">四年級數學 (16:9 課室版)</span>
+                    </h1>
+                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium hidden sm:block">
+                        步驟：① 選擇圖形 ➔ ② 拖曳虛線兩端的圓點調整位置 ➔ ③ 拉動滑塊對摺驗證！
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sound & Guide Controls -->
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="soundToggleBtn" class="kid-btn bg-sky-100 hover:bg-sky-200 text-sky-800 border-2 border-sky-300 px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1">
+                    <span id="soundIcon">🔊</span> 音效
+                </button>
+                <button id="helpModalBtn" class="kid-btn bg-amber-100 hover:bg-amber-200 text-amber-900 border-2 border-amber-300 px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1">
+                    💡 探究小提示
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace Container (12-col Grid inside 16:9 stage) -->
+        <main class="w-full flex-1 min-h-0 grid grid-cols-12 gap-3 items-stretch overflow-hidden">
+
+            <!-- Left Column: Step 1 Shape Selector + All Axes Reveal Control (3 cols) -->
+            <section class="col-span-3 flex flex-col min-h-0">
+                <div class="bg-white rounded-2xl border-3 border-pink-200 p-2.5 sm:p-3 shadow-sm flex-1 min-h-0 flex flex-col justify-between gap-2 overflow-hidden">
+                    <div class="flex flex-col gap-1.5 min-h-0 flex-1">
+                        <div class="flex items-center justify-between shrink-0">
+                            <h2 class="text-xs sm:text-sm font-black text-pink-600 flex items-center gap-1.5">
+                                <span class="w-5 h-5 rounded-full bg-pink-500 text-white text-xs flex items-center justify-center">1</span>
+                                選擇探究圖形
+                            </h2>
+                            <span class="text-[11px] font-bold text-slate-400">共 8 種</span>
+                        </div>
+
+                        <!-- 8 Shape Buttons Grid (2x4 Grid fitting cleanly in 16:9 height) -->
+                        <div id="shapeButtonsContainer" class="grid grid-cols-2 grid-rows-4 gap-1.5 flex-1 min-h-0">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Current Shape Inquiry Prompt & Show All Axes Button -->
+                    <div class="bg-amber-50/90 rounded-xl border-2 border-amber-200 p-2.5 flex flex-col gap-1.5 shrink-0">
+                        <div class="flex items-center justify-between gap-1">
+                            <span id="missionShapeName" class="font-black text-amber-900 text-xs sm:text-sm truncate">等邊三角形</span>
+                            <span id="axesCountPill" class="hidden bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0">
+                                共 3 條對稱軸
+                            </span>
+                        </div>
+                        <p id="missionHintText" class="text-[11px] text-amber-800 leading-snug font-medium line-clamp-2">
+                            試試將虛線連住「一個頂點」與「對邊中點」，再拉動滑塊對摺看看！
+                        </p>
+
+                        <button id="toggleAllAxesBtn" class="kid-btn w-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-amber-950 border-2 border-amber-500 py-1.5 px-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-1 shadow-sm">
+                            <span id="toggleAllAxesIcon">💡</span>
+                            <span id="toggleAllAxesText">顯示該圖所有對稱軸</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Interactive Grid Canvas & Folding Controls (9 cols) -->
+            <section class="col-span-9 flex flex-col min-h-0">
+                <div class="bg-white rounded-2xl border-3 border-sky-200 p-2.5 sm:p-3 shadow-sm flex-1 min-h-0 flex flex-col justify-between gap-2 relative overflow-hidden">
+                    
+                    <!-- Top Toolbar inside Canvas Area -->
+                    <div class="flex flex-wrap items-center justify-between gap-1.5 z-10 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-sky-500 text-white text-xs font-black flex items-center justify-center">2</span>
+                            <span class="font-black text-sky-800 text-xs sm:text-sm">
+                                拖曳虛線兩端的 <span class="inline-block w-3 h-3 rounded-full bg-pink-500 border-2 border-white shadow align-middle"></span> 圓點調整位置
+                            </span>
+                        </div>
+
+                        <!-- Quick Line Tools -->
+                        <div class="flex items-center gap-1.5">
+                            <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 px-2.5 py-1 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <input type="checkbox" id="snapToggle" checked class="w-3.5 h-3.5 accent-pink-500 rounded">
+                                <span>🧲 自動吸附</span>
+                            </label>
+
+                            <button id="resetLineBtn" class="kid-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border-2 border-indigo-300 px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1">
+                                📏 重置豎直虛線
+                            </button>
+
+                            <button id="toolbarShowAllAxesBtn" class="kid-btn bg-amber-100 hover:bg-amber-200 text-amber-900 border-2 border-amber-400 px-2.5 py-1 rounded-xl text-xs font-black flex items-center gap-1">
+                                <span id="toolbarAxesBtnText">💡 顯示該圖所有對稱軸</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Grid Canvas Wrapper -->
+                    <div id="canvasContainer" class="relative flex-1 min-h-0 w-full rounded-xl overflow-hidden border-2 border-slate-200 bg-[#FAFDFEFF] shadow-inner">
+                        <canvas id="symmetryCanvas" class="w-full h-full block"></canvas>
+
+                        <!-- Floating Live Angle / Status Pill (Top-Left of Canvas) -->
+                        <div class="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur border-2 border-slate-200 rounded-xl px-2.5 py-1 shadow-sm pointer-events-none flex items-center gap-2 text-xs font-bold text-slate-700">
+                            <span>📐 虛線角度：<strong id="lineAngleDisplay" class="text-pink-600 font-black">90° (豎直)</strong></span>
+                            <span class="text-slate-300">|</span>
+                            <span>📄 對摺進度：<strong id="foldPercentBadge" class="text-sky-600 font-black">0%</strong></span>
+                        </div>
+
+                        <!-- Floating All-Axes Summary Badge (Top-Right of Canvas when Show All Axes is ON) -->
+                        <div id="allAxesInfoBadge" class="hidden absolute top-2.5 right-2.5 bg-amber-50/95 backdrop-blur border-2 border-amber-400 rounded-xl px-3 py-1.5 shadow-md max-w-xs z-20">
+                            <div id="allAxesBadgeTitle" class="font-black text-amber-900 text-xs flex items-center gap-1">
+                                ✨ 等邊三角形共有 3 條對稱軸！
+                            </div>
+                            <div id="allAxesBadgeSub" class="text-[11px] text-amber-700 font-bold mt-0.5">
+                                👆 點擊畫布上的任何一條金色對稱軸，即可對齊並拉動滑塊驗證！
+                            </div>
+                        </div>
+
+                        <!-- Floating Discovery Feedback Banner (Bottom Center of Canvas) -->
+                        <div id="feedbackBanner" class="hidden absolute bottom-2.5 left-1/2 -translate-x-1/2 max-w-md w-[92%] rounded-xl px-3.5 py-2 shadow-lg border-2 text-center pointer-events-auto z-20">
+                            <!-- Dynamically updated when folded near 100% -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Folding Slider Control Bar (Compact for 16:9) -->
+                    <div class="bg-gradient-to-r from-sky-50 via-pink-50 to-amber-50 rounded-xl border-2 border-pink-200 px-3 py-2 shrink-0">
+                        <div class="flex items-center gap-3">
+                            <!-- Label -->
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-black flex items-center justify-center shadow">3</span>
+                                <div>
+                                    <div class="font-black text-slate-800 text-xs sm:text-sm leading-tight">拖動滑塊沿虛線摺疊</div>
+                                    <div class="text-[11px] text-slate-500 font-medium hidden sm:block">觀察兩邊圖形能不能完全重合</div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Unfold (0%) Button -->
+                            <button id="unfoldBtn" class="kid-btn shrink-0 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-300 px-3 py-1.5 rounded-xl font-black text-xs">
+                                🔄 展開 0%
+                            </button>
+
+                            <!-- The Interactive Slider -->
+                            <div class="flex-1 w-full flex flex-col gap-0.5">
+                                <input id="foldSlider" type="range" min="0" max="100" value="0" step="1" class="fold-slider" aria-label="摺疊程度滑塊">
+                                <div class="flex justify-between text-[10px] font-bold text-slate-400 px-1">
+                                    <span>0% 平鋪展開</span>
+                                    <span>50% 立起折半</span>
+                                    <span>100% 完全對摺</span>
+                                </div>
+                            </div>
+
+                            <!-- Quick Full Fold (100%) Button -->
+                            <button id="fullFoldBtn" class="kid-btn shrink-0 bg-pink-500 hover:bg-pink-600 text-white border-2 border-pink-600 px-3.5 py-1.5 rounded-xl font-black text-xs">
+                                ✨ 完全對摺 100%
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Help / Inquiry Tips Modal (No alert() used!) -->
+    <div id="helpModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border-4 border-amber-300 max-w-lg w-full p-6 shadow-2xl pop-badge">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xl font-black text-amber-900 flex items-center gap-2">
+                    💡 甚麼是「軸對稱圖形」與「對稱軸」？
+                </h3>
+                <button id="closeHelpModalBtn" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 font-black text-slate-600">✕</button>
+            </div>
+            <div class="space-y-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+                <p class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200">
+                    如果一個圖形沿著一條直線對摺後，直線兩側的部分能夠<strong>完全重合</strong>，這個圖形就是<strong>軸對稱圖形</strong>，這條折痕所在的直線就叫做<strong>對稱軸</strong>（常用虛線表示）。
+                </p>
+                <div class="bg-sky-50 p-3.5 rounded-2xl border-2 border-sky-200 space-y-1.5 text-sm">
+                    <div class="font-black text-sky-900">🔍 小四探究挑戰問題：</div>
+                    <p>1. <strong>等腰三角形</strong>和<strong>等邊三角形</strong>的對稱軸數量有甚麼不同？</p>
+                    <p>2. <strong>長方形</strong>的對角線是不是它的對稱軸？試著把虛線移到長方形的對角線上再對摺看看！</p>
+                    <p>3. <strong>正六邊形</strong>有 6 條對稱軸，那麼<strong>正八邊形</strong>會有幾條對稱軸呢？</p>
+                    <p>4. <strong>平行四邊形</strong>不管怎樣移動虛線，對摺後能完全重合嗎？</p>
+                </div>
+            </div>
+            <div class="mt-5 text-right">
+                <button id="gotItHelpBtn" class="kid-btn bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-6 py-2.5 rounded-2xl border-2 border-amber-500">
+                    我知道了，開始探究！🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /********************************************************************
+         * 1. SOUND EFFECTS CONTROLLER (Tone.js with safe fallback)
+         ********************************************************************/
+        let soundEnabled = true;
+        let synth = null;
+
+        function initAudio() {
+            if (!synth && window.Tone) {
+                try {
+                    synth = new Tone.PolySynth(Tone.Synth, {
+                        oscillator: { type: "triangle" },
+                        envelope: { attack: 0.01, decay: 0.15, sustain: 0.05, release: 0.3 }
+                    }).toDestination();
+                    synth.volume.value = -8;
+                } catch (e) {
+                    // Ignore audio restriction errors
+                }
+            }
+        }
+
+        function playTone(type) {
+            if (!soundEnabled || !window.Tone) return;
+            try {
+                if (Tone.context.state !== 'running') {
+                    Tone.context.resume();
+                }
+                initAudio();
+                if (!synth) return;
+
+                const now = Tone.now();
+                if (type === 'click') {
+                    synth.triggerAttackRelease("C5", "32n", now);
+                } else if (type === 'success') {
+                    synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", now);
+                } else if (type === 'mismatch') {
+                    synth.triggerAttackRelease(["F4", "E4"], "16n", now);
+                } else if (type === 'snap') {
+                    synth.triggerAttackRelease("G5", "64n", now);
+                }
+            } catch (e) {
+                // Silent fallback
+            }
+        }
+
+        /********************************************************************
+         * 2. SHAPE DEFINITIONS & SYMMETRY DATA
+         * Coordinates are defined in grid units relative to center (0, 0).
+         * Standard Grid Step = 36px on screen (scaled dynamically).
+         ********************************************************************/
+        const SHAPES = {
+            isosceles_triangle: {
+                id: 'isosceles_triangle',
+                name: '等腰三角形',
+                color: '#F472B6',
+                stroke: '#BE185D',
+                expectedAxesCount: 1,
+                expectedLabel: '1 條',
+                allAxesSummary: '等腰三角形只有 1 條對稱軸！',
+                allAxesSubtext: '👆 只有豎直連接頂角與底邊中點的這 1 條！試試其他方向會不會重合？',
+                hint: '兩腰相等但底邊長度不同！試試除了豎直對摺外，斜著對摺能重合嗎？',
+                // Distinct taller isosceles triangle centered around (0,0)
+                // Top apex at (0, -4.0), base at (-2.5, 3.5) and (2.5, 3.5)
+                getVertices: () => [
+                    { x:  0.0, y: -4.0 },
+                    { x:  2.5, y:  3.5 },
+                    { x: -2.5, y:  3.5 }
+                ],
+                validLineAngles: [90]
+            },
+            triangle: {
+                id: 'triangle',
+                name: '等邊三角形',
+                color: '#FF85A1',
+                stroke: '#D81B60',
+                expectedAxesCount: 3,
+                expectedLabel: '3 條',
+                allAxesSummary: '等邊三角形共有 3 條對稱軸！',
+                allAxesSubtext: '👆 點擊畫布上標有 1、2、3 的金色對稱軸，即可立即對齊並對摺！',
+                hint: '三條邊都一樣長！試試將虛線連住「一個頂點」與「對邊中點」，共有 3 個方向喔！',
+                // Equilateral triangle centered at centroid (0,0)
+                // Radius R = 4.2 grid units
+                getVertices: () => {
+                    const R = 4.2;
+                    const pts = [];
+                    for (let i = 0; i < 3; i++) {
+                        const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 3;
+                        pts.push({ x: R * Math.cos(angle), y: R * Math.sin(angle) });
+                    }
+                    return pts;
+                },
+                // Valid symmetry axes pass through (0,0) with normal angles:
+                // Line angles: 90° (vertical), 30°, 150°
+                validLineAngles: [90, 30, 150]
+            },
+            square: {
+                id: 'square',
+                name: '正方形',
+                color: '#4CC9F0',
+                stroke: '#0284C7',
+                expectedAxesCount: 4,
+                expectedLabel: '4 條',
+                allAxesSummary: '正方形共有 4 條對稱軸！',
+                allAxesSubtext: '👆 包含橫向、豎直及 2 條對角線！點擊任意金色對稱軸可立即對齊。',
+                hint: '除了橫向、豎直對摺，試試沿著兩條對角線對摺看看！',
+                getVertices: () => {
+                    const s = 3.5; // Half side = 3.5 grid units (7x7 square)
+                    return [
+                        { x: -s, y: -s },
+                        { x:  s, y: -s },
+                        { x:  s, y:  s },
+                        { x: -s, y:  s }
+                    ];
+                },
+                validLineAngles: [90, 0, 45, 135]
+            },
+            rectangle: {
+                id: 'rectangle',
+                name: '長方形',
+                color: '#FFB703',
+                stroke: '#D97706',
+                expectedAxesCount: 2,
+                expectedLabel: '2 條',
+                allAxesSummary: '長方形共有 2 條對稱軸！（對角線不是喔）',
+                allAxesSubtext: '👆 只有豎直與水平 2 條！點擊金色對稱軸可快速對齊。',
+                hint: '試試豎直、橫向對摺，再試試「對角線」對摺看會不會重合？',
+                getVertices: () => {
+                    const w = 4.5, h = 3.0; // 9x6 grid units
+                    return [
+                        { x: -w, y: -h },
+                        { x:  w, y: -h },
+                        { x:  w, y:  h },
+                        { x: -w, y:  h }
+                    ];
+                },
+                validLineAngles: [90, 0]
+            },
+            hexagon: {
+                id: 'hexagon',
+                name: '正六邊形',
+                color: '#C084FC',
+                stroke: '#7E22CE',
+                expectedAxesCount: 6,
+                expectedLabel: '6 條',
+                allAxesSummary: '正六邊形共有 6 條對稱軸！',
+                allAxesSubtext: '👆 3 條連對角頂點、3 條連對邊中點！點擊任一金色對稱軸即可對齊。',
+                hint: '試試連接「對角頂點」(3條) 和「對邊中點」(3條)，合共 6 條！',
+                getVertices: () => {
+                    const R = 4.0;
+                    const pts = [];
+                    for (let i = 0; i < 6; i++) {
+                        const a = (i * Math.PI) / 3;
+                        pts.push({ x: R * Math.cos(a), y: R * Math.sin(a) });
+                    }
+                    return pts;
+                },
+                validLineAngles: [90, 0, 30, 60, 120, 150]
+            },
+            octagon: {
+                id: 'octagon',
+                name: '正八邊形',
+                color: '#38BDF8',
+                stroke: '#0369A1',
+                expectedAxesCount: 8,
+                expectedLabel: '8 條',
+                allAxesSummary: '正八邊形共有 8 條對稱軸！',
+                allAxesSubtext: '👆 4 條連對角頂點、4 條連對邊中點（每 22.5° 一條）！點擊金色對稱軸可快速對齊。',
+                hint: '試試連接「對角頂點」(4條) 和「對邊中點」(4條)，合共 8 條對稱軸！',
+                getVertices: () => {
+                    const R = 4.1;
+                    const pts = [];
+                    for (let i = 0; i < 8; i++) {
+                        // Rotate by 22.5 deg (PI/8) so top/bottom/left/right edges are flat & horizontal/vertical
+                        const a = (i * Math.PI) / 4 + Math.PI / 8;
+                        pts.push({ x: R * Math.cos(a), y: R * Math.sin(a) });
+                    }
+                    return pts;
+                },
+                validLineAngles: [90, 67.5, 45, 22.5, 0, 157.5, 135, 112.5]
+            },
+            circle: {
+                id: 'circle',
+                name: '圓形',
+                color: '#2DD4BF',
+                stroke: '#0F766E',
+                expectedAxesCount: Infinity,
+                expectedLabel: '無數條',
+                allAxesSummary: '圓形有 無數條 對稱軸！（任何通過圓心的直線都是）',
+                allAxesSubtext: '👆 畫布展示了多條代表性對稱軸，點擊任一條或自由轉動虛線都能完全重合！',
+                hint: '只要虛線通過圓心，隨便轉動不同角度再對摺，看看會怎樣！',
+                isCircle: true,
+                radius: 3.8,
+                getVertices: () => {
+                    const R = 3.8;
+                    const pts = [];
+                    const segments = 72;
+                    for (let i = 0; i < segments; i++) {
+                        const a = (i * 2 * Math.PI) / segments;
+                        pts.push({ x: R * Math.cos(a), y: R * Math.sin(a) });
+                    }
+                    return pts;
+                },
+                validLineAngles: 'ALL_THROUGH_CENTER',
+                representativeAngles: [90, 67.5, 45, 22.5, 0, 157.5, 135, 112.5]
+            },
+            parallelogram: {
+                id: 'parallelogram',
+                name: '平行四邊形',
+                color: '#FB8500',
+                stroke: '#C2410C',
+                expectedAxesCount: 0,
+                expectedLabel: '0 條 (非軸對稱)',
+                allAxesSummary: '平行四邊形有 0 條對稱軸！（無論怎麼對摺都無法完全重合）',
+                allAxesSubtext: '💡 試試拉動滑塊對摺看看，兩邊永遠會有突出的部分無法重合喔！',
+                hint: '大挑戰：試試豎直、橫向或斜線對摺，有沒有任何一條線能讓它完全重合？',
+                getVertices: () => {
+                    // General oblique parallelogram: width 6, height 4, horizontal shear 2
+                    return [
+                        { x: -2.0, y: -2.5 },
+                        { x:  4.0, y: -2.5 },
+                        { x:  2.0, y:  2.5 },
+                        { x: -4.0, y:  2.5 }
+                    ];
+                },
+                validLineAngles: []
+            }
+        };
+
+        /********************************************************************
+         * 3. APPLICATION STATE
+         ********************************************************************/
+        const state = {
+            currentShapeKey: 'triangle',
+            foldProgress: 0, // 0 to 100
+            snapEnabled: true,
+            showAllAxes: false, // Toggle for showing all axes of symmetry for the current shape
+
+            // Dashed line endpoints in Grid Coordinates (origin (0,0) is center of canvas)
+            // Default: Vertical line x = 0, from y = -5.2 to y = +5.2
+            p1: { x: 0, y: -5.2 },
+            p2: { x: 0, y:  5.2 },
+
+            draggingHandle: null, // 'p1', 'p2', or 'line'
+            dragOffset: { x: 0, y: 0 },
+            hoveredHandle: null,
+            hoveredAxisAngle: null, // Angle of displayed symmetry axis under cursor
+
+            lastOverlapStatus: null // 'match' | 'mismatch' | null
+        };
+
+        /********************************************************************
+         * 4. GEOMETRY & POLYGON CLIPPING / FOLDING MATH
+         ********************************************************************/
+        // Normalize angle of line (p1 -> p2) into [0, 180) degrees where:
+        // 0° = Horizontal, 90° = Vertical
+        function getLineAngleDeg(p1, p2) {
+            let deg = Math.atan2(-(p2.y - p1.y), p2.x - p1.x) * (180 / Math.PI);
+            deg = ((deg % 180) + 180) % 180;
+            if (Math.abs(deg - 180) < 0.01) deg = 0;
+            return deg;
+        }
+
+        // Perpendicular signed distance from point P to line (p1 -> p2)
+        function signedDistanceToLine(pt, p1, p2) {
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const len = Math.hypot(dx, dy) || 1;
+            // Normal vector pointing to one side
+            const nx = -dy / len;
+            const ny = dx / len;
+            return (pt.x - p1.x) * nx + (pt.y - p1.y) * ny;
+        }
+
+        // Clip a convex/simple polygon against a half-plane defined by line (p1, p2)
+        // side > 0 keeps points with signedDistance >= 0; side < 0 keeps signedDistance <= 0
+        function clipPolygonByLine(vertices, p1, p2, side) {
+            const out = [];
+            const n = vertices.length;
+            const eps = 1e-6;
+
+            for (let i = 0; i < n; i++) {
+                const curr = vertices[i];
+                const prev = vertices[(i + n - 1) % n];
+                const dCurr = signedDistanceToLine(curr, p1, p2) * side;
+                const dPrev = signedDistanceToLine(prev, p1, p2) * side;
+
+                const currInside = dCurr >= -eps;
+                const prevInside = dPrev >= -eps;
+
+                if (currInside) {
+                    if (!prevInside) {
+                        // Entering half-plane: add intersection
+                        const t = dPrev / (dPrev - dCurr);
+                        out.push({
+                            x: prev.x + t * (curr.x - prev.x),
+                            y: prev.y + t * (curr.y - prev.y)
+                        });
+                    }
+                    out.push(curr);
+                } else if (prevInside) {
+                    // Leaving half-plane: add intersection
+                    const t = dPrev / (dPrev - dCurr);
+                    out.push({
+                        x: prev.x + t * (curr.x - prev.x),
+                        y: prev.y + t * (curr.y - prev.y)
+                    });
+                }
+            }
+            return out;
+        }
+
+        // Project and fold a point across line (p1, p2) according to foldProgress (0 to 100%)
+        // Includes subtle 3D perspective lift so students feel a realistic paper fold
+        function foldPointAcrossLine(pt, p1, p2, foldProgress) {
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len;
+            const uy = dy / len;
+            const nx = -uy;
+            const ny = ux;
+
+            // Decompose (pt - p1) into parallel component s and perpendicular component d
+            const rx = pt.x - p1.x;
+            const ry = pt.y - p1.y;
+            const s = rx * ux + ry * uy;
+            const d = rx * nx + ry * ny;
+
+            // Fold angle theta from 0 (0%) to PI (100%)
+            const theta = (foldProgress / 100) * Math.PI;
+            const cosT = Math.cos(theta);
+            const sinT = Math.sin(theta);
+
+            // As it folds in 3D, distance perpendicular to axis scales by cos(theta)
+            // Plus a slight foreshortening along the axis proportional to height z = |d| * sin(theta)
+            const foldedD = d * cosT;
+            const zLift = Math.abs(d) * sinT;
+            const perspectiveShift = -zLift * 0.08; // Gentle visual 3D lift
+
+            return {
+                x: p1.x + s * ux + foldedD * nx,
+                y: p1.y + s * uy + foldedD * ny + perspectiveShift
+            };
+        }
+
+        // Check if current dashed line is a true line of symmetry for the current shape
+        function checkIsSymmetryLine(shapeKey, p1, p2) {
+            const shape = SHAPES[shapeKey];
+            // 1. Line must pass very close to origin (0,0) since all our shapes are centered at (0,0)
+            const distFromCenter = Math.abs(signedDistanceToLine({ x: 0, y: 0 }, p1, p2));
+            const centerTolerance = 0.28; // generous enough for 4th graders
+
+            if (distFromCenter > centerTolerance) {
+                return false;
+            }
+
+            if (shape.validLineAngles === 'ALL_THROUGH_CENTER') {
+                return true;
+            }
+
+            const currentAngle = getLineAngleDeg(p1, p2);
+            const angleTolerance = 4.5; // degrees tolerance
+
+            for (const targetAngle of shape.validLineAngles) {
+                let diff = Math.abs(currentAngle - targetAngle);
+                diff = Math.min(diff, 180 - diff);
+                if (diff <= angleTolerance) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /********************************************************************
+         * 5. UI INITIALIZATION & SHAPE SVG PREVIEWS
+         ********************************************************************/
+        function createMiniShapeSVG(shapeKey) {
+            const shape = SHAPES[shapeKey];
+            if (shape.isCircle) {
+                return `<svg viewBox="-5 -5 10 10" class="w-6 h-6 sm:w-7 sm:h-7 mx-auto drop-shadow-sm shrink-0">
+                    <circle cx="0" cy="0" r="3.6" fill="${shape.color}" fill-opacity="0.45" stroke="${shape.stroke}" stroke-width="0.7"/>
+                </svg>`;
+            }
+            const pts = shape.getVertices().map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
+            return `<svg viewBox="-5.5 -5.5 11 11" class="w-6 h-6 sm:w-7 sm:h-7 mx-auto drop-shadow-sm shrink-0">
+                <polygon points="${pts}" fill="${shape.color}" fill-opacity="0.45" stroke="${shape.stroke}" stroke-width="0.75" stroke-linejoin="round"/>
+            </svg>`;
+        }
+
+        function renderShapeButtons() {
+            const container = document.getElementById('shapeButtonsContainer');
+            container.innerHTML = '';
+
+            Object.keys(SHAPES).forEach(key => {
+                const s = SHAPES[key];
+                const isActive = state.currentShapeKey === key;
+                const btn = document.createElement('button');
+                btn.className = `shape-card kid-btn rounded-xl border-2 p-1 flex flex-col items-center justify-center gap-0.5 bg-slate-50 hover:bg-pink-50 border-slate-200 min-h-0 ${isActive ? 'active' : ''}`;
+                btn.innerHTML = `
+                    ${createMiniShapeSVG(key)}
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 leading-tight truncate max-w-full">${s.name}</span>
+                `;
+                btn.addEventListener('click', () => selectShape(key));
+                container.appendChild(btn);
+            });
+        }
+
+        function selectShape(shapeKey) {
+            playTone('click');
+            state.currentShapeKey = shapeKey;
+            state.foldProgress = 0;
+            state.lastOverlapStatus = null;
+            document.getElementById('foldSlider').value = 0;
+            resetLineToVertical(false);
+            renderShapeButtons();
+            updateShapeInfoAndAllAxesUI();
+            updateFeedbackBanner();
+            drawCanvas();
+        }
+
+        function resetLineToVertical(withSound = true) {
+            if (withSound) playTone('click');
+            state.p1 = { x: 0, y: -5.2 };
+            state.p2 = { x: 0, y:  5.2 };
+            state.foldProgress = 0;
+            state.lastOverlapStatus = null;
+            document.getElementById('foldSlider').value = 0;
+            updateFeedbackBanner();
+            drawCanvas();
+        }
+
+        /********************************************************************
+         * 6. SHAPE PROMPT & "SHOW ALL AXES OF SYMMETRY" CONTROLLER
+         ********************************************************************/
+        function getDisplayAnglesForShape(shapeKey) {
+            const shape = SHAPES[shapeKey];
+            if (shapeKey === 'circle') {
+                return shape.representativeAngles;
+            }
+            if (Array.isArray(shape.validLineAngles)) {
+                return shape.validLineAngles;
+            }
+            return [];
+        }
+
+        function toggleShowAllAxes() {
+            playTone('click');
+            state.showAllAxes = !state.showAllAxes;
+            updateShapeInfoAndAllAxesUI();
+            drawCanvas();
+        }
+
+        function alignDashedLineToAngle(deg) {
+            playTone('snap');
+            const len = 5.2;
+            const rad = deg * (Math.PI / 180);
+            const dirX = Math.cos(rad);
+            const dirY = -Math.sin(rad);
+
+            state.p1 = { x: -dirX * len, y: -dirY * len };
+            state.p2 = { x:  dirX * len, y:  dirY * len };
+
+            // Reset fold to 0% so student can drag slider or click 100% to verify
+            state.foldProgress = 0;
+            state.lastOverlapStatus = null;
+            document.getElementById('foldSlider').value = 0;
+            updateFeedbackBanner();
+            drawCanvas();
+        }
+
+        function updateShapeInfoAndAllAxesUI() {
+            const currentShape = SHAPES[state.currentShapeKey];
+            document.getElementById('missionShapeName').textContent = currentShape.name;
+            document.getElementById('missionHintText').textContent = currentShape.hint;
+
+            const leftBtnText = document.getElementById('toggleAllAxesText');
+            const leftBtnIcon = document.getElementById('toggleAllAxesIcon');
+            const leftBtn = document.getElementById('toggleAllAxesBtn');
+            const toolbarBtnText = document.getElementById('toolbarAxesBtnText');
+            const toolbarBtn = document.getElementById('toolbarShowAllAxesBtn');
+            const axesCountPill = document.getElementById('axesCountPill');
+            const allAxesBadge = document.getElementById('allAxesInfoBadge');
+
+            if (state.showAllAxes) {
+                leftBtnIcon.textContent = '🙈';
+                leftBtnText.textContent = '隱藏所有對稱軸';
+                leftBtn.className = 'kid-btn w-full bg-rose-500 hover:bg-rose-600 text-white border-2 border-rose-600 py-1.5 px-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-1 shadow-sm';
+
+                toolbarBtnText.textContent = '🙈 隱藏所有對稱軸';
+                toolbarBtn.className = 'kid-btn bg-rose-100 hover:bg-rose-200 text-rose-800 border-2 border-rose-400 px-2.5 py-1 rounded-xl text-xs font-black flex items-center gap-1';
+
+                axesCountPill.textContent = `對稱軸：${currentShape.expectedLabel}`;
+                axesCountPill.classList.remove('hidden');
+
+                allAxesBadge.classList.remove('hidden');
+                document.getElementById('allAxesBadgeTitle').textContent = `✨ ${currentShape.allAxesSummary}`;
+                document.getElementById('allAxesBadgeSub').textContent = currentShape.allAxesSubtext;
+            } else {
+                leftBtnIcon.textContent = '💡';
+                leftBtnText.textContent = '顯示該圖所有對稱軸';
+                leftBtn.className = 'kid-btn w-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-amber-950 border-2 border-amber-500 py-1.5 px-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-1 shadow-sm';
+
+                toolbarBtnText.textContent = '💡 顯示該圖所有對稱軸';
+                toolbarBtn.className = 'kid-btn bg-amber-100 hover:bg-amber-200 text-amber-900 border-2 border-amber-400 px-2.5 py-1 rounded-xl text-xs font-black flex items-center gap-1';
+
+                axesCountPill.classList.add('hidden');
+                allAxesBadge.classList.add('hidden');
+            }
+        }
+
+        /********************************************************************
+         * 7. FEEDBACK BANNER & FOLD VALIDATION AT 100%
+         ********************************************************************/
+        function updateFeedbackBanner() {
+            const banner = document.getElementById('feedbackBanner');
+            const pct = state.foldProgress;
+            document.getElementById('foldPercentBadge').textContent = `${pct}%`;
+
+            // Format line angle display (show 0.5° precision when snapped to 22.5° / 67.5° etc.)
+            const rawAngle = getLineAngleDeg(state.p1, state.p2);
+            const roundedHalf = Math.round(rawAngle * 2) / 2;
+            const isHalfDeg = Math.abs(roundedHalf % 1 - 0.5) < 0.01 &&
+                [22.5, 67.5, 112.5, 157.5].some(a => Math.abs(rawAngle - a) < 0.8);
+            const displayAngle = isHalfDeg ? roundedHalf.toFixed(1) : Math.round(rawAngle);
+
+            let angleDesc = `${displayAngle}°`;
+            if (Number(displayAngle) === 90) angleDesc = '90° (豎直)';
+            else if (Number(displayAngle) === 0) angleDesc = '0° (水平)';
+            else if (Number(displayAngle) === 45 || Number(displayAngle) === 135) angleDesc = `${displayAngle}° (對角斜線)`;
+            document.getElementById('lineAngleDisplay').textContent = angleDesc;
+
+            if (pct < 96) {
+                banner.className = 'hidden';
+                state.lastOverlapStatus = null;
+                return;
+            }
+
+            // Evaluate overlap when folded >= 96%
+            const isMatch = checkIsSymmetryLine(state.currentShapeKey, state.p1, state.p2);
+
+            if (isMatch) {
+                // Auto-snap to exact symmetry axis so visual overlap is 100% crisp
+                snapLineToExactSymmetry(state.currentShapeKey);
+
+                if (state.lastOverlapStatus !== 'match') {
+                    playTone('success');
+                    state.lastOverlapStatus = 'match';
+                }
+
+                banner.className = 'pop-badge absolute bottom-3 left-1/2 -translate-x-1/2 max-w-lg w-[92%] rounded-2xl px-4 py-2.5 shadow-lg border-3 border-emerald-400 bg-emerald-50/95 text-emerald-900 text-center z-20';
+                banner.innerHTML = `
+                    <div class="font-black text-sm sm:text-base flex items-center justify-center gap-1.5">
+                        🎉 完全重合！這條虛線是「${SHAPES[state.currentShapeKey].name}」的對稱軸！
+                    </div>
+                    <div class="text-xs text-emerald-700 font-bold mt-0.5">
+                        ✨ 兩邊圖形 100% 重疊在一起了！試試轉動虛線看看還有沒有其他對稱軸？
+                    </div>
+                `;
+            } else {
+                if (state.lastOverlapStatus !== 'mismatch') {
+                    playTone('mismatch');
+                    state.lastOverlapStatus = 'mismatch';
+                }
+
+                const extraParallelogramMsg = state.currentShapeKey === 'parallelogram'
+                    ? '💡 發現了嗎？平行四邊形無論怎樣對摺都不會完全重合，所以它有 0 條對稱軸！'
+                    : '🤔 紅色突出的部分沒有重合喔！請展開後拖曳虛線兩端的圓點再試試看。';
+
+                banner.className = 'pop-badge absolute bottom-3 left-1/2 -translate-x-1/2 max-w-lg w-[92%] rounded-2xl px-4 py-2.5 shadow-lg border-3 border-rose-300 bg-rose-50/95 text-rose-900 text-center z-20';
+                banner.innerHTML = `
+                    <div class="font-black text-sm sm:text-base flex items-center justify-center gap-1.5">
+                        ❌ 兩邊沒有完全重合！這條虛線不是對稱軸
+                    </div>
+                    <div class="text-xs text-rose-700 font-bold mt-0.5">
+                        ${extraParallelogramMsg}
+                    </div>
+                `;
+            }
+        }
+
+        // Gently align p1, p2 to exact mathematical symmetry line when within student tolerance
+        function snapLineToExactSymmetry(shapeKey) {
+            const shape = SHAPES[shapeKey];
+            const len = 5.2;
+            let deg = getLineAngleDeg(state.p1, state.p2);
+
+            if (Array.isArray(shape.validLineAngles)) {
+                for (const target of shape.validLineAngles) {
+                    let diff = Math.abs(deg - target);
+                    if (Math.min(diff, 180 - diff) <= 5) {
+                        deg = target;
+                        break;
+                    }
+                }
+            }
+            const rad = deg * (Math.PI / 180);
+            // Keep endpoint orientation consistent with current p1->p2
+            const currDx = state.p2.x - state.p1.x;
+            const currDy = state.p2.y - state.p1.y;
+            const dirX = Math.cos(rad);
+            const dirY = -Math.sin(rad);
+            const sign = (currDx * dirX + currDy * dirY) >= 0 ? 1 : -1;
+
+            state.p1 = { x: -dirX * len * sign, y: -dirY * len * sign };
+            state.p2 = { x:  dirX * len * sign, y:  dirY * len * sign };
+        }
+
+        /********************************************************************
+         * 8. CANVAS RENDERING ENGINE (GRID, SAVED AXES, FOLDING, HANDLES)
+         ********************************************************************/
+        const canvas = document.getElementById('symmetryCanvas');
+        const ctx = canvas.getContext('2d');
+        let gridScale = 36; // pixels per 1 grid unit
+        let centerX = 0;
+        let centerY = 0;
+
+        function resizeCanvas() {
+            const container = document.getElementById('canvasContainer');
+            const rect = container.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            centerX = rect.width / 2;
+            centerY = rect.height / 2;
+            // Fit at least 12.5 grid units vertically and horizontally
+            gridScale = Math.min(rect.width / 14, rect.height / 12.5);
+            drawCanvas();
+        }
+
+        function toScreen(pt) {
+            return {
+                x: centerX + pt.x * gridScale,
+                y: centerY + pt.y * gridScale
+            };
+        }
+
+        function toGrid(screenX, screenY) {
+            return {
+                x: (screenX - centerX) / gridScale,
+                y: (screenY - centerY) / gridScale
+            };
+        }
+
+        function drawPolygonPath(points) {
+            if (!points || points.length === 0) return;
+            ctx.beginPath();
+            const first = toScreen(points[0]);
+            ctx.moveTo(first.x, first.y);
+            for (let i = 1; i < points.length; i++) {
+                const p = toScreen(points[i]);
+                ctx.lineTo(p.x, p.y);
+            }
+            ctx.closePath();
+        }
+
+        function drawCoordinateGrid(width, height) {
+            ctx.save();
+            // Minor half-unit grid lines
+            const step = gridScale;
+            const cols = Math.ceil(width / step / 2) + 2;
+            const rows = Math.ceil(height / step / 2) + 2;
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#E2E8F0';
+            ctx.beginPath();
+            for (let i = -cols; i <= cols; i++) {
+                const x = centerX + i * step;
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+            for (let j = -rows; j <= rows; j++) {
+                const y = centerY + j * step;
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+            ctx.stroke();
+
+            // Grid intersection dots for tactile math feel
+            ctx.fillStyle = '#CBD5E1';
+            for (let i = -cols; i <= cols; i++) {
+                for (let j = -rows; j <= rows; j++) {
+                    const x = centerX + i * step;
+                    const y = centerY + j * step;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Center Point Marker (0,0)
+            ctx.fillStyle = '#94A3B8';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawAllSymmetryAxesOverlay(shapeKey) {
+            if (!state.showAllAxes) return;
+
+            ctx.save();
+
+            // Special visual cue when Parallelogram (0 axes) has "Show All Axes" enabled
+            if (shapeKey === 'parallelogram') {
+                const badgePos = toScreen({ x: 0, y: 0 });
+                ctx.fillStyle = 'rgba(255, 251, 235, 0.94)';
+                ctx.strokeStyle = '#F59E0B';
+                ctx.lineWidth = 3;
+                const bw = 270, bh = 54;
+                ctx.beginPath();
+                ctx.roundRect(badgePos.x - bw / 2, badgePos.y - bh / 2, bw, bh, 16);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#92400E';
+                ctx.font = '900 15px "Noto Sans TC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🚫 平行四邊形有 0 條對稱軸！', badgePos.x, badgePos.y - 8);
+                ctx.font = '700 12px "Noto Sans TC", sans-serif';
+                ctx.fillStyle = '#B45309';
+                ctx.fillText('無論沿哪條線對摺，兩側都無法完全重合', badgePos.x, badgePos.y + 12);
+                ctx.restore();
+                return;
+            }
+
+            const angles = getDisplayAnglesForShape(shapeKey);
+            const len = 4.75;
+
+            angles.forEach((deg, idx) => {
+                const rad = deg * (Math.PI / 180);
+                const a = toScreen({ x: -Math.cos(rad) * len, y:  Math.sin(rad) * len });
+                const b = toScreen({ x:  Math.cos(rad) * len, y: -Math.sin(rad) * len });
+                const isHovered = state.hoveredAxisAngle === deg;
+
+                // Soft outer glow
+                ctx.beginPath();
+                ctx.lineWidth = isHovered ? 9 : 6;
+                ctx.strokeStyle = isHovered ? 'rgba(245, 158, 11, 0.45)' : 'rgba(251, 191, 36, 0.28)';
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+
+                // Dashed golden symmetry line
+                ctx.beginPath();
+                ctx.setLineDash([8, 6]);
+                ctx.lineWidth = isHovered ? 4 : 3;
+                ctx.strokeStyle = isHovered ? '#D97706' : '#F59E0B';
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Numbered pill badge at endpoint B (for finite axes) or star for circle
+                const labelText = shapeKey === 'circle' ? '∞' : `${idx + 1}`;
+                const badgeRadius = isHovered ? 14 : 12;
+
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, badgeRadius, 0, Math.PI * 2);
+                ctx.fillStyle = isHovered ? '#D97706' : '#F59E0B';
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '900 12px "Fredoka", "Noto Sans TC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(labelText, b.x, b.y + 0.5);
+            });
+
+            ctx.restore();
+        }
+
+        function drawShapeAndFolding() {
+            const shape = SHAPES[state.currentShapeKey];
+            const vertices = shape.getVertices();
+            const pct = state.foldProgress;
+
+            // Split shape along infinite line passing through p1 -> p2
+            // Stationary half (side >= 0) and Folding half (side <= 0)
+            const stationaryHalf = clipPolygonByLine(vertices, state.p1, state.p2, 1);
+            const foldingHalfOriginal = clipPolygonByLine(vertices, state.p1, state.p2, -1);
+            const foldingHalfTransformed = foldingHalfOriginal.map(pt =>
+                foldPointAcrossLine(pt, state.p1, state.p2, pct)
+            );
+
+            ctx.save();
+
+            // 1. Draw ghost outline of original full shape when folded > 5% so students remember where it came from
+            if (pct > 5) {
+                drawPolygonPath(vertices);
+                ctx.fillStyle = 'rgba(203, 213, 225, 0.18)';
+                ctx.fill();
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#94A3B8';
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            const isFullFold = pct >= 96;
+            const isSymmetricMatch = isFullFold && checkIsSymmetryLine(state.currentShapeKey, state.p1, state.p2);
+
+            // 2. Draw Stationary Half
+            if (stationaryHalf.length >= 3) {
+                drawPolygonPath(stationaryHalf);
+                ctx.fillStyle = isSymmetricMatch ? '#34D39944' : `${shape.color}66`;
+                ctx.fill();
+                ctx.lineWidth = 3.5;
+                ctx.strokeStyle = isSymmetricMatch ? '#059669' : shape.stroke;
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+            }
+
+            // 3. Draw Folding Half
+            if (foldingHalfTransformed.length >= 3) {
+                drawPolygonPath(foldingHalfTransformed);
+
+                if (isSymmetricMatch) {
+                    // Glowing green celebratory match!
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
+                    ctx.strokeStyle = '#059669';
+                    ctx.lineWidth = 4.5;
+                } else if (isFullFold && !isSymmetricMatch) {
+                    // Mismatch warning tint so non-overlapping parts stand out clearly
+                    ctx.fillStyle = 'rgba(244, 63, 94, 0.42)';
+                    ctx.strokeStyle = '#E11D48';
+                    ctx.lineWidth = 3.5;
+                } else {
+                    // Normal or mid-fold appearance with dynamic shading
+                    const shadeAlpha = 0.4 + Math.sin((pct / 100) * Math.PI) * 0.25;
+                    ctx.fillStyle = hexToRgba(shape.color, shadeAlpha);
+                    ctx.strokeStyle = shape.stroke;
+                    ctx.lineWidth = 3.5;
+                }
+
+                ctx.lineJoin = 'round';
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // 4. Draw key vertex/center guide dots when flat (0%) to help students align
+            if (pct === 0 && !shape.isCircle) {
+                vertices.forEach((v, idx) => {
+                    const sv = toScreen(v);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.strokeStyle = shape.stroke;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(sv.x, sv.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Also draw midpoint dot on edges
+                    const nextV = vertices[(idx + 1) % vertices.length];
+                    const mid = toScreen({ x: (v.x + nextV.x) / 2, y: (v.y + nextV.y) / 2 });
+                    ctx.fillStyle = shape.stroke;
+                    ctx.beginPath();
+                    ctx.arc(mid.x, mid.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            ctx.restore();
+        }
+
+        function drawDashedSymmetryLine() {
+            const s1 = toScreen(state.p1);
+            const s2 = toScreen(state.p2);
+
+            ctx.save();
+
+            // Extended faint guide line across canvas
+            const dx = s2.x - s1.x;
+            const dy = s2.y - s1.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len;
+            const uy = dy / len;
+
+            ctx.beginPath();
+            ctx.setLineDash([4, 6]);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(236, 72, 153, 0.3)';
+            ctx.moveTo(s1.x - ux * 1000, s1.y - uy * 1000);
+            ctx.lineTo(s2.x + ux * 1000, s2.y + uy * 1000);
+            ctx.stroke();
+
+            // Main active dashed line between P1 and P2
+            ctx.beginPath();
+            ctx.setLineDash([10, 8]);
+            ctx.lineWidth = 4.5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#EC4899';
+            ctx.moveTo(s1.x, s1.y);
+            ctx.lineTo(s2.x, s2.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Draggable Circular Handles at both ends (P1 and P2)
+            [
+                { pt: s1, id: 'p1', label: '拖曳' },
+                { pt: s2, id: 'p2', label: '拖曳' }
+            ].forEach(h => {
+                const isActive = state.draggingHandle === h.id || state.hoveredHandle === h.id;
+                const radius = isActive ? 18 : 15;
+
+                // Outer glow ring
+                ctx.beginPath();
+                ctx.arc(h.pt.x, h.pt.y, radius + 5, 0, Math.PI * 2);
+                ctx.fillStyle = isActive ? 'rgba(236, 72, 153, 0.35)' : 'rgba(236, 72, 153, 0.18)';
+                ctx.fill();
+
+                // Main handle circle
+                ctx.beginPath();
+                ctx.arc(h.pt.x, h.pt.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = isActive ? '#DB2777' : '#EC4899';
+                ctx.fill();
+                ctx.lineWidth = 3.5;
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.stroke();
+
+                // Inner white dot
+                ctx.beginPath();
+                ctx.arc(h.pt.x, h.pt.y, 4.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fill();
+            });
+
+            ctx.restore();
+        }
+
+        function hexToRgba(hex, alpha) {
+            const clean = hex.replace('#', '');
+            const r = parseInt(clean.substring(0, 2), 16);
+            const g = parseInt(clean.substring(2, 4), 16);
+            const b = parseInt(clean.substring(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function drawCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            drawCoordinateGrid(rect.width, rect.height);
+            drawShapeAndFolding();
+            drawAllSymmetryAxesOverlay(state.currentShapeKey);
+            drawDashedSymmetryLine();
+        }
+
+        /********************************************************************
+         * 9. INTERACTIVE DRAGGING OF DASHED LINE ENDPOINTS (MOUSE & TOUCH)
+         ********************************************************************/
+        function getPointerPos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function hitTestHandles(screenPos) {
+            const s1 = toScreen(state.p1);
+            const s2 = toScreen(state.p2);
+            const hitRadius = 28; // Generous touch target for primary students
+
+            if (Math.hypot(screenPos.x - s1.x, screenPos.y - s1.y) <= hitRadius) {
+                return 'p1';
+            }
+            if (Math.hypot(screenPos.x - s2.x, screenPos.y - s2.y) <= hitRadius) {
+                return 'p2';
+            }
+
+            // Also allow dragging the middle of the dashed line to translate it
+            const distToSegment = distanceToSegment(screenPos, s1, s2);
+            if (distToSegment <= 14) {
+                return 'line';
+            }
+            return null;
+        }
+
+        // Hit-test displayed golden symmetry axes when "Show All Axes" is active
+        function hitTestDisplayedSymmetryAxis(screenPos) {
+            if (!state.showAllAxes) return null;
+            const angles = getDisplayAnglesForShape(state.currentShapeKey);
+            if (!angles || angles.length === 0) return null;
+
+            const len = 4.75;
+            for (const deg of angles) {
+                const rad = deg * (Math.PI / 180);
+                const a = toScreen({ x: -Math.cos(rad) * len, y:  Math.sin(rad) * len });
+                const b = toScreen({ x:  Math.cos(rad) * len, y: -Math.sin(rad) * len });
+                if (distanceToSegment(screenPos, a, b) <= 14) {
+                    return deg;
+                }
+            }
+            return null;
+        }
+
+        function distanceToSegment(p, v, w) {
+            const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+            if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+        }
+
+        function applySmartSnapping(movingPt, anchorPt) {
+            if (!state.snapEnabled) return movingPt;
+
+            let snapped = { ...movingPt };
+
+            // 1. Snap to 0.5 grid increments if close
+            const gx = Math.round(snapped.x * 2) / 2;
+            const gy = Math.round(snapped.y * 2) / 2;
+            if (Math.hypot(snapped.x - gx, snapped.y - gy) < 0.18) {
+                snapped.x = gx;
+                snapped.y = gy;
+            }
+
+            // 2. Snap to current shape's vertices or edge midpoints when dragging near them
+            const shape = SHAPES[state.currentShapeKey];
+            if (!shape.isCircle) {
+                const verts = shape.getVertices();
+                for (let i = 0; i < verts.length; i++) {
+                    const v = verts[i];
+                    const nextV = verts[(i + 1) % verts.length];
+                    const mid = { x: (v.x + nextV.x) / 2, y: (v.y + nextV.y) / 2 };
+
+                    if (Math.hypot(movingPt.x - v.x, movingPt.y - v.y) < 0.32) {
+                        return { x: v.x, y: v.y };
+                    }
+                    if (Math.hypot(movingPt.x - mid.x, movingPt.y - mid.y) < 0.32) {
+                        return { x: mid.x, y: mid.y };
+                    }
+                }
+            }
+
+            // 3. If the line passes near center (0,0) and angle is close to special symmetry angles
+            // (multiples of 15° or 22.5° so students can easily test triangle, square, hexagon, and octagon)
+            const distCenter = Math.abs(signedDistanceToLine({ x: 0, y: 0 }, anchorPt, snapped));
+            if (distCenter < 0.38) {
+                const dx = snapped.x - anchorPt.x;
+                const dy = snapped.y - anchorPt.y;
+                const len = Math.hypot(dx, dy);
+                if (len > 1.5) {
+                    const rawDeg = Math.atan2(-dy, dx) * (180 / Math.PI);
+                    const snap15 = Math.round(rawDeg / 15) * 15;
+                    const snap225 = Math.round(rawDeg / 22.5) * 22.5;
+
+                    const diff15 = Math.abs(rawDeg - snap15);
+                    const diff225 = Math.abs(rawDeg - snap225);
+                    const bestSnap = diff225 < diff15 ? snap225 : snap15;
+
+                    if (Math.min(diff15, diff225) < 3.5) {
+                        const rad = bestSnap * (Math.PI / 180);
+                        snapped.x = anchorPt.x + len * Math.cos(rad);
+                        snapped.y = anchorPt.y - len * Math.sin(rad);
+                    }
+                }
+            }
+
+            return snapped;
+        }
+
+        function onPointerDown(evt) {
+            const pos = getPointerPos(evt);
+            const hit = hitTestHandles(pos);
+
+            // If not grabbing the pink line handles, check if student clicked one of the displayed golden symmetry axes
+            if (!hit) {
+                const clickedAxisDeg = hitTestDisplayedSymmetryAxis(pos);
+                if (clickedAxisDeg !== null) {
+                    evt.preventDefault();
+                    alignDashedLineToAngle(clickedAxisDeg);
+                }
+                return;
+            }
+
+            evt.preventDefault();
+            state.draggingHandle = hit;
+
+            // If student starts adjusting the dashed line while folded, unfold to 0% so they can clearly position the line
+            if (state.foldProgress > 0) {
+                state.foldProgress = 0;
+                document.getElementById('foldSlider').value = 0;
+                updateFeedbackBanner();
+            }
+
+            const gPos = toGrid(pos.x, pos.y);
+            if (hit === 'line') {
+                state.dragOffset = {
+                    x1: state.p1.x - gPos.x,
+                    y1: state.p1.y - gPos.y,
+                    x2: state.p2.x - gPos.x,
+                    y2: state.p2.y - gPos.y
+                };
+            }
+            canvas.style.cursor = 'grabbing';
+            drawCanvas();
+        }
+
+        function onPointerMove(evt) {
+            const pos = getPointerPos(evt);
+
+            if (!state.draggingHandle) {
+                const hover = hitTestHandles(pos);
+                const hoverAxis = hover ? null : hitTestDisplayedSymmetryAxis(pos);
+
+                if (hover !== state.hoveredHandle || hoverAxis !== state.hoveredAxisAngle) {
+                    state.hoveredHandle = hover;
+                    state.hoveredAxisAngle = hoverAxis;
+                    canvas.style.cursor = hover ? 'grab' : (hoverAxis !== null ? 'pointer' : 'default');
+                    drawCanvas();
+                }
+                return;
+            }
+
+            evt.preventDefault();
+            const gPos = toGrid(pos.x, pos.y);
+            // Clamp within visible grid bounds
+            gPos.x = Math.max(-6.2, Math.min(6.2, gPos.x));
+            gPos.y = Math.max(-5.5, Math.min(5.5, gPos.y));
+
+            if (state.draggingHandle === 'p1') {
+                const candidate = applySmartSnapping(gPos, state.p2);
+                if (Math.hypot(candidate.x - state.p2.x, candidate.y - state.p2.y) > 2.0) {
+                    state.p1 = candidate;
+                }
+            } else if (state.draggingHandle === 'p2') {
+                const candidate = applySmartSnapping(gPos, state.p1);
+                if (Math.hypot(candidate.x - state.p1.x, candidate.y - state.p1.y) > 2.0) {
+                    state.p2 = candidate;
+                }
+            } else if (state.draggingHandle === 'line') {
+                let nx1 = gPos.x + state.dragOffset.x1;
+                let ny1 = gPos.y + state.dragOffset.y1;
+                let nx2 = gPos.x + state.dragOffset.x2;
+                let ny2 = gPos.y + state.dragOffset.y2;
+                if (state.snapEnabled) {
+                    // Snap midpoint to 0.5 grid
+                    const midX = (nx1 + nx2) / 2;
+                    const midY = (ny1 + ny2) / 2;
+                    const smX = Math.round(midX * 2) / 2;
+                    const smY = Math.round(midY * 2) / 2;
+                    if (Math.hypot(midX - smX, midY - smY) < 0.2) {
+                        nx1 += (smX - midX);
+                        nx2 += (smX - midX);
+                        ny1 += (smY - midY);
+                        ny2 += (smY - midY);
+                    }
+                }
+                state.p1 = { x: nx1, y: ny1 };
+                state.p2 = { x: nx2, y: ny2 };
+            }
+
+            updateFeedbackBanner();
+            drawCanvas();
+        }
+
+        function onPointerUp() {
+            if (state.draggingHandle) {
+                playTone('snap');
+                state.draggingHandle = null;
+                canvas.style.cursor = state.hoveredHandle ? 'grab' : 'default';
+                drawCanvas();
+            }
+        }
+
+        /********************************************************************
+         * 10. EVENT LISTENERS & ANIMATED FOLDING BUTTONS
+         ********************************************************************/
+        let foldAnimFrame = null;
+        function animateFoldTo(targetPct) {
+            if (foldAnimFrame) cancelAnimationFrame(foldAnimFrame);
+            const slider = document.getElementById('foldSlider');
+
+            function step() {
+                const current = state.foldProgress;
+                const diff = targetPct - current;
+                if (Math.abs(diff) <= 1.5) {
+                    state.foldProgress = targetPct;
+                    slider.value = targetPct;
+                    updateFeedbackBanner();
+                    drawCanvas();
+                    return;
+                }
+                state.foldProgress = Math.round(current + diff * 0.22);
+                slider.value = state.foldProgress;
+                updateFeedbackBanner();
+                drawCanvas();
+                foldAnimFrame = requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        window.onload = function () {
+            // Initialize UI
+            renderShapeButtons();
+            updateShapeInfoAndAllAxesUI();
+            resizeCanvas();
+            updateFeedbackBanner();
+
+            window.addEventListener('resize', resizeCanvas);
+
+            // Canvas Pointer Events
+            canvas.addEventListener('mousedown', onPointerDown);
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('mouseup', onPointerUp);
+
+            canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+            window.addEventListener('touchmove', onPointerMove, { passive: false });
+            window.addEventListener('touchend', onPointerUp);
+
+            // Fold Slider Input
+            const foldSlider = document.getElementById('foldSlider');
+            foldSlider.addEventListener('input', (e) => {
+                if (foldAnimFrame) cancelAnimationFrame(foldAnimFrame);
+                state.foldProgress = parseInt(e.target.value, 10);
+                updateFeedbackBanner();
+                drawCanvas();
+            });
+
+            // Quick Unfold & Full Fold Buttons
+            document.getElementById('unfoldBtn').addEventListener('click', () => {
+                playTone('click');
+                animateFoldTo(0);
+            });
+            document.getElementById('fullFoldBtn').addEventListener('click', () => {
+                playTone('click');
+                animateFoldTo(100);
+            });
+
+            // Reset Vertical Line Button
+            document.getElementById('resetLineBtn').addEventListener('click', () => {
+                resetLineToVertical(true);
+            });
+
+            // Toggle Show All Axes Buttons (both Left Panel and Top Toolbar)
+            document.getElementById('toggleAllAxesBtn').addEventListener('click', toggleShowAllAxes);
+            document.getElementById('toolbarShowAllAxesBtn').addEventListener('click', toggleShowAllAxes);
+
+            // Snap Toggle
+            document.getElementById('snapToggle').addEventListener('change', (e) => {
+                state.snapEnabled = e.target.checked;
+                playTone('click');
+            });
+
+            // Sound Toggle
+            document.getElementById('soundToggleBtn').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+                if (soundEnabled) playTone('click');
+            });
+
+            // Help Modal Controls
+            const helpModal = document.getElementById('helpModal');
+            document.getElementById('helpModalBtn').addEventListener('click', () => {
+                playTone('click');
+                helpModal.classList.remove('hidden');
+                helpModal.classList.add('flex');
+            });
+            const closeHelp = () => {
+                playTone('click');
+                helpModal.classList.add('hidden');
+                helpModal.classList.remove('flex');
+            };
+            document.getElementById('closeHelpModalBtn').addEventListener('click', closeHelp);
+            document.getElementById('gotItHelpBtn').addEventListener('click', closeHelp);
+        };
+    </script>
+</body>
+</html>
